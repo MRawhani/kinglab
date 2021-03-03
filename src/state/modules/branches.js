@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { getState } from '../../utils/local-stoage-utils';
 import api from '../../utils/api';
+import { generateId } from '../../utils/helpers';
 
 export const state = {
 	branches: getState('vuex.branches') || [],
@@ -31,7 +32,7 @@ export const mutations = {
 		if (newBranch.id) state.branches.push(newBranch);
 		else
 			state.branches.push({
-				id: state.branches.length + 1,
+				id: generateId(state.branches),
 				...newBranch,
 				is_main: 0,
 				state: 1,

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import api from '../../utils/api';
-import { dataTableQuery } from '../../utils/helpers';
+import { dataTableQuery, generateId } from '../../utils/helpers';
 
 export const state = {
 	items: [],
@@ -38,14 +38,12 @@ export const mutations = {
 	},
 	ADD_INVOICE(state, invoice) {
 		if (invoice.id) state.items.push(invoice);
-		else {
-			const id = Math.max(...state.items.map((item) => item.id)) + 1;
+		else
 			state.items.push({
-				id,
+				id: generateId(state.items),
 				...invoice,
 				state: 1,
 			});
-		}
 	},
 	EDIT_INVOICE(state, invoiceId) {
 		const current = state.items.find((invoice) => invoice.id === invoiceId);
@@ -54,6 +52,22 @@ export const mutations = {
 		state.items.filter((invoice, i) => {
 			if (invoice.id === invoiceId) {
 				Vue.set(state.items, i, current);
+			}
+		});
+	},
+	DELETE_AGENT_INVOICES(state, agentId) {
+		state.items.forEach((invoice, i) => {
+			if (invoice.agent_id && invoice.agent_id === agentId) {
+				invoice.state = 3;
+				Vue.set(state.items, i, invoice);
+			}
+
+			if (invoice.agents && invoice.agents[0].id === agentId) {
+				Vue.set(
+					state,
+					'items',
+					state.items.filter((item) => item.id !== invoice.id)
+				);
 			}
 		});
 	},
@@ -83,8 +97,18 @@ export const actions = {
 		// });
 	},
 
-	isAgentExist({ state }, agent) {
-		return state.items.findIndex((invoice) => invoice.name === agent) !== -1;
+	isAgentExist({ getters }, agent) {
+		return getters.active.findIndex((invoice) => invoice.name === agent) !== -1;
+	},
+
+	updateInvoiceAgents({ state }, agents) {
+		state.items.forEach((invoice, i) => {
+			if (invoice.agents) {
+				const agent = agents.find((agent) => agent.old === invoice.agents[0].id);
+				invoice.agents[0].id = agent.new;
+				Vue.set(state.items, i, invoice);
+			}
+		});
 	},
 
 	async sync({ state, dispatch }) {

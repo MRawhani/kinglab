@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { getState } from '../../utils/local-stoage-utils';
 import api from '../../utils/api';
+import { generateId } from '../../utils/helpers';
 
 export const state = {
 	users: getState('vuex.users') || [],
@@ -24,7 +25,7 @@ export const mutations = {
 		if (newUser.id) state.users.push(newUser);
 		else
 			state.users.push({
-				id: state.users.length + 1,
+				id: generateId(state.users),
 				...newUser,
 				state: 1,
 			});

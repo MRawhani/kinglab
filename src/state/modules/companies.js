@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { getState } from '../../utils/local-stoage-utils';
 import api from '../../utils/api';
+import { generateId } from '../../utils/helpers';
 
 export const state = {
 	companies: getState('vuex.companies') || [],
@@ -22,14 +23,12 @@ export const mutations = {
 	},
 	ADD_COMPANY(state, newCompany) {
 		if (newCompany.id) state.companies.push(newCompany);
-		else {
-			const id = Math.max(...state.companies.map((item) => item.id)) + 1;
+		else
 			state.companies.push({
-				id,
+				id: generateId(state.companies),
 				...newCompany,
 				state: 1,
 			});
-		}
 	},
 	DELETE_COMPANY(state, companyId) {
 		const current = state.companies.find((company) => company.id === companyId);

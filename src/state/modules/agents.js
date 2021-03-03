@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import api from '../../utils/api';
-import { dataTableQuery } from '../../utils/helpers';
+import { dataTableQuery, generateId } from '../../utils/helpers';
 
 export const state = {
 	items: [],
@@ -22,15 +22,12 @@ export const mutations = {
 	},
 	ADD_AGENT(state, newAgent) {
 		if (newAgent.id) state.items.push(newAgent);
-		else {
-			const id = Math.max(...state.items.map((item) => item.id)) + 1;
-
+		else
 			state.items.push({
-				id,
+				id: generateId(state.items),
 				...newAgent,
 				state: 1,
 			});
-		}
 	},
 	DELETE_AGENT(state, agentId) {
 		const current = state.items.find((agent) => agent.id === agentId);
@@ -81,6 +78,7 @@ export const actions = {
 	},
 	deleteAgent({ commit }, agentId) {
 		commit('DELETE_AGENT', agentId);
+		commit('invoices/DELETE_AGENT_INVOICES', agentId, { root: true });
 
 		// return api.delete(`/agents/${agentId}`).then((res) => {
 		// 	const { data } = res.data;
@@ -101,7 +99,7 @@ export const actions = {
 		// });
 	},
 
-	async sync({ state }) {
+	async sync({ state, dispatch }) {
 		const requests = [];
 		const agents = state.items;
 
@@ -112,6 +110,19 @@ export const actions = {
 		newAgents.forEach((agent) => {
 			requests.push(api.post('/agents', agent));
 		});
+
+		const results = await Promise.all(requests);
+		const newIds = [];
+		results.forEach(({ data }, i) => {
+			newIds.push({
+				old: newAgents[i].id,
+				new: data.data.id,
+			});
+		});
+
+		await dispatch('invoices/updateInvoiceAgents', newIds, { root: true });
+
+		results.length = 0;
 
 		editedAgents.forEach((agent) => {
 			requests.push(api.put(`/agents/${agent.id}`, agent));

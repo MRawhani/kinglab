@@ -32,6 +32,9 @@ export default new Vuex.Store({
 				commit('agents/SET_AGENTS', data.agents);
 				commit('invoices/SET_INVOICES', data.invoices);
 				commit('results/SET_RESULTES', data.results);
+				commit('home/SET_STATS', data.dashboard.stats);
+				commit('home/SET_BRANCH_AGENTS', data.dashboard.branches);
+				commit('home/SET_BRANCH_TESTS', data.dashboard.tests);
 			});
 		},
 	},

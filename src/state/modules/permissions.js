@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import api from '../../utils/api';
+import { generateId } from '../../utils/helpers';
 
 export const state = {
 	permissions: [],
@@ -32,7 +33,7 @@ export const mutations = {
 		if (data.id) state.permissions.push(data);
 		else
 			state.permissions.push({
-				id: state.permissions.length + 1,
+				id: generateId(state.permissions),
 				...data,
 				state: 1,
 			});

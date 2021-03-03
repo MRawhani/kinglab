@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import api from '../../utils/api';
+import { generateId } from '../../utils/helpers';
 
 export const state = {
 	results: [],
@@ -17,15 +18,12 @@ export const mutations = {
 	},
 	ADD_RESULT(state, newResult) {
 		if (newResult.id) state.results.push(newResult);
-		else {
-			const id = Math.max(...state.results.map((item) => item.id)) + 1;
-
+		else
 			state.results.push({
-				id: id === -Infinity ? 1 : id,
+				id: generateId(state.results),
 				...newResult,
 				state: 1,
 			});
-		}
 	},
 	EDIT_RESULT(state, resultData) {
 		const current = state.results.find((result) => result.id === resultData.id);

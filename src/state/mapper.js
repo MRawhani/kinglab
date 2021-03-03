@@ -6,6 +6,10 @@ export const authComputed = {
 	...mapGetters('global/auth', ['isLoggedIn']),
 };
 
+export const homeComputed = {
+	...mapState('home', ['stats', 'branchAgents', 'branchTests']),
+};
+
 export const authActions = {
 	...mapActions('global/auth', ['logIn', 'logOut']),
 };

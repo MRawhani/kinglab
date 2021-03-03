@@ -1,7 +1,7 @@
 <template>
 	<v-navigation-drawer v-model="showDrawer" app right clipped color="#f2f5f7" class="pt-6">
 		<v-list nav dense>
-			<v-list-item-group v-if="currentUser.type === 'user'" color="primary">
+			<v-list-item-group v-if="userType === 'user'" color="primary">
 				<template v-for="(link, i) in links">
 					<v-list-item v-if="canAccess(link.name)" :key="i" link :to="link.href">
 						<v-list-item-icon>
@@ -33,7 +33,7 @@
 			</v-list-item-group>
 		</v-list>
 
-		<v-dialog v-if="currentUser.type === 'user'" v-model="syncing" width="300" persistent>
+		<v-dialog v-if="userType === 'user'" v-model="syncing" width="300" persistent>
 			<v-card color="primary" dark max-width="300">
 				<v-card-text>
 					<span class="py-2 d-block">يرجى الانتظار</span>
@@ -46,7 +46,6 @@
 
 <script>
 import { authComputed } from '../../state/mapper';
-import runActionInAllModules from '../../utils/runModulesAction';
 import store from '../../state/store';
 
 export default {
@@ -64,7 +63,7 @@ export default {
 			syncing: false,
 			showDrawer: this.drawer,
 			links: [
-				{ title: 'لوحة التحكم', icon: 'mdi-view-dashboard', href: '/', name: 'dashboard' },
+				{ title: 'الرئيسية', icon: 'mdi-view-dashboard', href: '/', name: 'dashboard' },
 				{ title: 'العملاء', icon: 'mdi-human-male-female', href: '/agents', name: 'agents' },
 				{ title: 'العمليات', icon: 'mdi-inbox-full-outline', href: '/invoices', name: 'invoices' },
 				{ title: 'الفحوصات', icon: 'mdi-test-tube', href: '/tests', name: 'tests' },
@@ -79,6 +78,10 @@ export default {
 
 	computed: {
 		...authComputed,
+		userType() {
+			if (!this.currentUser) return 'user';
+			return this.currentUser.type;
+		},
 	},
 
 	watch: {
@@ -89,16 +92,27 @@ export default {
 
 	methods: {
 		canAccess(page) {
+			if (!this.currentUser) return false;
 			return this.currentUser.permissions.includes(page);
 		},
 
 		async syncData() {
 			this.syncing = true;
 
-			await runActionInAllModules('sync');
-			await store.dispatch('loadBaseData');
+			try {
+				await store.dispatch('branches/sync');
+				await store.dispatch('companies/sync');
+				await store.dispatch('users/sync');
+				await store.dispatch('tests/sync');
+				await store.dispatch('agents/sync');
+				await store.dispatch('invoices/sync');
+				await store.dispatch('loadBaseData');
 
-			this.syncing = false;
+				this.syncing = false;
+			} catch (error) {
+				this.$VAlert.error('عذرا حدث خطأ!');
+				this.syncing = false;
+			}
 		},
 	},
 };

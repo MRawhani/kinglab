@@ -229,9 +229,11 @@ export default {
 			}
 		},
 
-		openInvoice() {
+		async openInvoice() {
 			const agent = this.selected[0].name;
-			if (this.isAgentExistAction(agent) && this.addInvoiceAnyway) {
+			const exist = await this.isAgentExistAction(agent);
+
+			if (exist && this.addInvoiceAnyway) {
 				this.existDialog = true;
 				return;
 			}
@@ -251,11 +253,12 @@ export default {
 			this.invoiceDialog = false;
 		},
 
-		closeExistDialog() {
+		async closeExistDialog() {
 			this.existDialog = false;
 			this.addInvoiceAnyway = false;
 
-			this.openInvoice();
+			await this.openInvoice();
+			this.addInvoiceAnyway = true;
 		},
 	},
 };

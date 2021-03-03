@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import api from '../../utils/api';
+import { generateId } from '../../utils/helpers';
 
 export const state = {
 	tests: [],
@@ -23,7 +24,7 @@ export const mutations = {
 		if (newTest.id) state.tests.push(newTest);
 		else
 			state.tests.push({
-				id: state.tests.length + 1,
+				id: generateId(state.tests),
 				...newTest,
 				state: 1,
 			});
