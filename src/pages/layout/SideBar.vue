@@ -110,6 +110,7 @@ export default {
 
 				this.syncing = false;
 			} catch (error) {
+				console.error(error);
 				this.$VAlert.error('عذرا حدث خطأ!');
 				this.syncing = false;
 			}

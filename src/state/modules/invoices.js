@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import api from '../../utils/api';
-import { dataTableQuery, generateId } from '../../utils/helpers';
+import { dataTableQuery, generateId, generateInvoiceId } from '../../utils/helpers';
 
 export const state = {
 	items: [],
@@ -14,6 +14,7 @@ export const getters = {
 			.map((item) => {
 				return {
 					id: item.id,
+					invoice_no: item.invoice_no,
 					invoice_id: item.id,
 					branch: rootGetters['currentBranch'].name,
 					delivery_at: item.delivery_date,
@@ -37,17 +38,16 @@ export const mutations = {
 		});
 	},
 	ADD_INVOICE(state, invoice) {
-		if (invoice.id) state.items.push(invoice);
-		else
-			state.items.push({
-				id: generateId(state.items),
-				...invoice,
-				state: 1,
-			});
+		state.items.push({
+			...invoice,
+			created_at: new Date().toLocaleDateString(),
+			state: 1,
+		});
 	},
 	EDIT_INVOICE(state, invoiceId) {
 		const current = state.items.find((invoice) => invoice.id === invoiceId);
 		current.remain = 0;
+		current.state = 2;
 
 		state.items.filter((invoice, i) => {
 			if (invoice.id === invoiceId) {
@@ -81,20 +81,36 @@ export const actions = {
 			return data;
 		});
 	},
-	saveInvoice({ commit }, newInvoice) {
-		commit('ADD_INVOICE', newInvoice);
+	getInvoice({ state, rootState }, invoiceId) {
+		return new Promise((resolve, reject) => {
+			const result = state.items.find((invoice) => invoice.id === invoiceId);
+			const agentId = result.agent_id ? result.agent_id : result.agents[0].id;
+			const agent = rootState.agents.items.find((agent) => agent.id === agentId);
+			if (!result) reject(new Error('Invoice not found'));
+			if (!agent) reject(new Error('Agent not found'));
 
-		// return api.post('/invoices', newInvoice).then((res) => {
-		// 	return res.data;
-		// });
+			console.log(result, agent);
+
+			resolve({
+				invoice: result,
+				agent,
+			});
+		});
+	},
+	saveInvoice({ commit, state }, newInvoice) {
+		return new Promise((resolve) => {
+			const data = {
+				id: generateId(state.items),
+				invoice_no: generateInvoiceId(),
+				...newInvoice,
+			};
+
+			commit('ADD_INVOICE', data);
+			resolve(data);
+		});
 	},
 	editRemain({ commit }, invoiceId) {
 		commit('EDIT_INVOICE', invoiceId);
-
-		// return api.put(`/invoices/${invoiceId}/remain`).then((res) => {
-		// 	const { data } = res.data;
-		// 	return data;
-		// });
 	},
 
 	isAgentExist({ getters }, agent) {

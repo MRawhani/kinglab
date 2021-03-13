@@ -8,6 +8,9 @@ import Companies from '../pages/Companies';
 import Agents from '../pages/Agents';
 import Branches from '../pages/Branches';
 import Invoices from '../pages/Invoices';
+import TestResult from '../pages/print/TestResult';
+import ResultQRCode from '../pages/print/ResultQRCode';
+import Invoice from '../pages/print/Invoice';
 import CompanyAgents from '../pages/CompanyAgents';
 import Login from '../pages/Login';
 import AccessDenied from '../pages/AccessDenied';
@@ -69,6 +72,16 @@ export default [
 		},
 	},
 	{
+		path: '/agents/invoice/:invoiceId',
+		name: 'agents',
+		component: Invoice,
+		meta: {
+			authRequired: true,
+			accessLevel: 'user',
+		},
+		props: true,
+	},
+	{
 		path: '/invoices',
 		name: 'invoices',
 		component: Invoices,
@@ -76,6 +89,26 @@ export default [
 			authRequired: true,
 			accessLevel: 'user',
 		},
+	},
+	{
+		path: '/invoices/result/:invoiceId',
+		name: 'invoices',
+		component: TestResult,
+		meta: {
+			authRequired: true,
+			accessLevel: 'user',
+		},
+		props: true,
+	},
+	{
+		path: '/invoices/qrcode/:invoiceId',
+		name: 'invoices',
+		component: ResultQRCode,
+		meta: {
+			authRequired: true,
+			accessLevel: 'user',
+		},
+		props: true,
 	},
 	{
 		path: '/company-agents',

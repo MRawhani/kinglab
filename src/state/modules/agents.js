@@ -120,7 +120,7 @@ export const actions = {
 			});
 		});
 
-		await dispatch('invoices/updateInvoiceAgents', newIds, { root: true });
+		if (newIds.length) await dispatch('invoices/updateInvoiceAgents', newIds, { root: true });
 
 		results.length = 0;
 

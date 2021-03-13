@@ -77,16 +77,6 @@
 				</v-tooltip>
 			</template>
 		</v-data-table>
-		<v-dialog v-model="offlineDialog" max-width="350">
-			<v-card>
-				<v-card-title class="headline">لا يوجد انترنت</v-card-title>
-				<v-card-text>عذرا لايمكن الطباعة بدون انترنت!</v-card-text>
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<v-btn color="primary" text @click="offlineDialog = false">اغلاق</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
 		<v-dialog v-model="existDialog" max-width="350">
 			<v-card>
 				<v-card-title class="headline">فحص مكرر</v-card-title>
@@ -109,7 +99,6 @@ import ConfirmDailog from '../components/base/confirm-dailog';
 import Layout from './layout/Layout.vue';
 import { agentsComputed, agentsActions, invoicesActions, authComputed } from '../state/mapper';
 import InvoiceForm from '../components/agents/invoice-form.vue';
-import { print } from '../utils/print';
 
 export default {
 	name: 'Agents',
@@ -121,7 +110,6 @@ export default {
 		isLoading: false,
 		formDialog: false,
 		invoiceDialog: false,
-		offlineDialog: false,
 		existDialog: false,
 		isEditMode: false,
 		addInvoiceAnyway: true,
@@ -215,14 +203,13 @@ export default {
 
 		async saveInvoice({ data, withPrint }) {
 			try {
-				await this.saveInvoiceAction(data);
+				const saved = await this.saveInvoiceAction(data);
 				this.$VAlert.success('تم حفظ الفاتورة');
+				console.log(saved);
 				if (withPrint) {
-					if (!window.navigator.onLine) {
-						print(`/print/invoice/`);
-					} else {
-						this.offlineDialog = true;
-					}
+					this.$router.push({
+						path: `/agents/invoice/${saved.id}`,
+					});
 				}
 			} catch (error) {
 				this.$VAlert.error('عذرا حدث خطأ!');

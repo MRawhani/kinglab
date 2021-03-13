@@ -1,7 +1,7 @@
 .DS_Store
-node_modules
+/node_modules
 /dist
-
+/disktop
 
 # local env files
 .env.local
@@ -24,3 +24,5 @@ pnpm-debug.log*
 
 #Electron-builder output
 /dist_electron
+
+King Labs.pdf

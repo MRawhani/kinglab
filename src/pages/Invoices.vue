@@ -61,6 +61,16 @@
 							</v-list-item>
 						</v-list-item-group>
 						<v-list-item-group color="primary">
+							<v-list-item @click="printInvoice(item)">
+								<v-list-item-icon>
+									<v-icon>mdi-printer</v-icon>
+								</v-list-item-icon>
+								<v-list-item-content>
+									<v-list-item-title> طباعة السند</v-list-item-title>
+								</v-list-item-content>
+							</v-list-item>
+						</v-list-item-group>
+						<v-list-item-group color="primary">
 							<v-list-item @click="generateCode(item)">
 								<v-list-item-icon>
 									<v-icon>mdi-qrcode-plus</v-icon>
@@ -96,16 +106,6 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
-		<v-dialog v-model="offlineDialog" max-width="350">
-			<v-card>
-				<v-card-title class="headline">لا يوجد انترنت</v-card-title>
-				<v-card-text>عذرا لايمكن الطباعة بدون انترنت!</v-card-text>
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<v-btn color="primary" text @click="offlineDialog = false">اغلاق</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
 		<confirm-dailog ref="confirm"></confirm-dailog>
 	</layout>
 </template>
@@ -115,7 +115,6 @@ import Layout from './layout/Layout.vue';
 import { invoicesComputed, invoicesActions, resultsActions } from '../state/mapper';
 import EditInvoiceForm from '../components/invoices/edit-invoice-form.vue';
 import ConfirmDailog from '../components/base/confirm-dailog.vue';
-import { print } from '../utils/print';
 
 export default {
 	name: 'Invoices',
@@ -125,7 +124,6 @@ export default {
 		isLoading: false,
 		isEditMode: false,
 		invoiceDialog: false,
-		offlineDialog: false,
 		remainDialog: false,
 		invoiceKey: 0,
 		invoice: {
@@ -141,7 +139,7 @@ export default {
 		...invoicesComputed,
 		headers() {
 			return [
-				{ text: 'رقم العملية', value: 'id', sortable: false },
+				{ text: 'رقم العملية', value: 'invoice_no', sortable: false },
 				{ text: 'اسم العميل', value: 'name', sortable: false },
 				{ text: 'اسم الفحص', value: 'test', sortable: false },
 				{ text: 'الفرع', value: 'branch', sortable: false },
@@ -198,11 +196,7 @@ export default {
 		async generateCode(item) {
 			try {
 				await this.getResultAction(item.id);
-				if (window.navigator.onLine) {
-					print(`/print/qrcode/${item.id}`);
-				} else {
-					this.offlineDialog = true;
-				}
+				this.$router.push({ path: `/invoices/qrcode/${item.invoice_no}` });
 			} catch (error) {
 				this.$VAlert.info('لم يتم ادخال النتيجة بعد!');
 			}
@@ -224,13 +218,19 @@ export default {
 		async printResult(item) {
 			try {
 				await this.getResultAction(item.id);
-				if (window.navigator.onLine) {
-					print(`/print/result/${item.id}`);
-				} else {
-					this.offlineDialog = true;
-				}
+				this.$router.push({ path: `/invoices/result/${item.id}` });
 			} catch (error) {
 				this.$VAlert.info('لم يتم ادخال النتيجة بعد!');
+			}
+		},
+
+		async printInvoice(item) {
+			try {
+				await this.getResultAction(item.id);
+				this.$router.push({ path: `/agents/invoice/${item.id}` });
+			} catch (error) {
+				console.error(error);
+				this.$VAlert.error('عذرا حدث خطأ!');
 			}
 		},
 

@@ -118,6 +118,7 @@ export const invoicesActions = {
 	...mapActions('invoices', {
 		getInvoicesAction: 'getInvoicesList',
 		saveInvoiceAction: 'saveInvoice',
+		getInvoiceAction: 'getInvoice',
 		editRemainAction: 'editRemain',
 		isAgentExistAction: 'isAgentExist',
 	}),
@@ -128,6 +129,7 @@ export const resultsActions = {
 		saveResultAction: 'saveResult',
 		editResultAction: 'editResult',
 		getResultAction: 'getResult',
+		getResultDataAction: 'getResultData',
 		editDeliveredAction: 'editDelivered',
 	}),
 };

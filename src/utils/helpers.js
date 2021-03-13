@@ -1,3 +1,4 @@
+import { getState } from './local-stoage-utils';
 /**
  * make query params string for data table options
  */
@@ -11,4 +12,10 @@ function generateId(items) {
 	return id === -Infinity ? 1 : id;
 }
 
-export { dataTableQuery, generateId };
+function generateInvoiceId() {
+	const { data } = getState('currentUser');
+	const randomKey = Math.floor(Math.random() * Date.now());
+	return `${data.id}${data.branch_id}${randomKey}`;
+}
+
+export { dataTableQuery, generateId, generateInvoiceId };
