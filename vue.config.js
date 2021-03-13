@@ -5,13 +5,7 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        publish: [
-          {
-            provider: "github",
-            owner: "m-alghobary",
-            
-          }
-        ]
+        publish: ['github']
       },
       preload: "src/preload.js",
     }

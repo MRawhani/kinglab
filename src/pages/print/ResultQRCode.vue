@@ -26,8 +26,8 @@
 <script>
 import VueQrcode from 'vue-qrcode';
 
-export default {
-	name: 'ResultQrCode',
+export default { 
+	name: 'ResultQrCode',    
 	props: {
 		invoiceId: {
 			type: String,

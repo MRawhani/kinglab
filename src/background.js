@@ -1,8 +1,8 @@
 'use strict'
 
-import { app, protocol, BrowserWindow,Menu,ipcMain } from 'electron'
+import { app, protocol, BrowserWindow,Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-// import { autoUpdater } from "electron-updater"
+ import { autoUpdater } from "electron-updater"
 const path = require('path')
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -35,9 +35,10 @@ async function createWindow() {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
+  process.env.GH_TOKEN ="63c45708f96fd1599f4b20a0786eb11bb257d68f";
+
     autoUpdater.checkForUpdatesAndNotify()
   }
-  process.env.GH_TOKEN ="63c45708f96fd1599f4b20a0786eb11bb257d68f";
   // mainWindow.once('ready-to-show', () => {
   //   autoUpdater.checkForUpdatesAndNotify();
   // });
