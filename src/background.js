@@ -37,7 +37,9 @@ async function createWindow() {
     win.loadURL('app://./index.html')
   process.env.GH_TOKEN ="23ea2e1483771246bd686002b7b1ffeb08da9bed";
 
-    autoUpdater.checkForUpdatesAndNotify()
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+}, 60000)
   }
   // mainWindow.once('ready-to-show', () => {
   //   autoUpdater.checkForUpdatesAndNotify();
@@ -46,7 +48,24 @@ async function createWindow() {
 // autoUpdater.checkForUpdates();
 
 }
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+  const dialogOpts = {
+      type: 'info',
+      buttons: ['Restart', 'Not Now. On next Restart'],
+      title: 'Update',
+      message: process.platform === 'win32' ? releaseNotes : releaseName,
+      detail: 'A New Version has been Downloaded. Restart Now to Complete the Update.'
+  }
 
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+      if (returnValue.response === 0) autoUpdater.quitAndInstall()
+  })
+})
+
+autoUpdater.on('error', message => {
+  console.error('There was a problem updating the application')
+  console.error(message)
+})
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar

@@ -52,7 +52,7 @@ export default {
 	// 	});
 	// },
 	created() {
-		alert('works')
+		
 		this.$vuetify.rtl = true;
 		this.$vuetify.lang.current = 'ar';
 	},
