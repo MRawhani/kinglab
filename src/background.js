@@ -22,7 +22,7 @@ async function createWindow() {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: true,
-      // contextIsolation: true,
+       contextIsolation: true,
       preload: path.join(__dirname, "preload.js"),
     }
   }) 
@@ -35,7 +35,7 @@ async function createWindow() {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
-  process.env.GH_TOKEN ="63c45708f96fd1599f4b20a0786eb11bb257d68f";
+  process.env.GH_TOKEN ="23ea2e1483771246bd686002b7b1ffeb08da9bed";
 
     autoUpdater.checkForUpdatesAndNotify()
   }

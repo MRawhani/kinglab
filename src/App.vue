@@ -1,7 +1,7 @@
 <template>
 	<v-app>
 		<RouterView :key="$route.fullPath" />
-		<div id="notification" class="hidden">
+		<!-- <div id="notification" class="hidden">
 			<p id="message"></p>
 			<button id="close-button" @click="closeNotification">
 				Close
@@ -9,7 +9,7 @@
 			<button id="restart-button" @click="restartApp" class="hidden">
 				Restart
 			</button>
-		</div>
+		</div> -->
 	</v-app>
 </template>
 
@@ -23,34 +23,34 @@ export default {
 			return title ? `${title} | King labs` : 'King labs';
 		},
 	},
-	methods: {
-		closeNotification: function() {
-			const notification = document.getElementById('notification');
+	// methods: {
+	// 	closeNotification: function() {
+	// 		const notification = document.getElementById('notification');
 
-			notification.classList.add('hidden');
-		},
-		restartApp: function() {
-			window.ipcRenderer.send('restart_app');
-		},
-	},
-	mounted() {
-		const notification = document.getElementById('notification');
-		const message = document.getElementById('message');
-		const restartButton = document.getElementById('restart-button');
+	// 		notification.classList.add('hidden');
+	// 	},
+	// 	restartApp: function() {
+	// 		window.ipcRenderer.send('restart_app');
+	// 	},
+	// },
+	// mounted() {
+	// 	const notification = document.getElementById('notification');
+	// 	const message = document.getElementById('message');
+	// 	const restartButton = document.getElementById('restart-button');
 
-		window.ipcRenderer.on('update_available', () => {
-			window.ipcRenderer.removeAllListeners('update_available');
-			message.innerText = 'A new update is available. Downloading now...';
-			notification.classList.remove('hidden');
-		});
+	// 	window.ipcRenderer.on('update_available', () => {
+	// 		window.ipcRenderer.removeAllListeners('update_available');
+	// 		message.innerText = 'A new update is available. Downloading now...';
+	// 		notification.classList.remove('hidden');
+	// 	});
 
-		window.ipcRenderer.on('update_downloaded', () => {
-			window.ipcRenderer.removeAllListeners('update_downloaded');
-			message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
-			restartButton.classList.remove('hidden');
-			notification.classList.remove('hidden');
-		});
-	},
+	// 	window.ipcRenderer.on('update_downloaded', () => {
+	// 		window.ipcRenderer.removeAllListeners('update_downloaded');
+	// 		message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+	// 		restartButton.classList.remove('hidden');
+	// 		notification.classList.remove('hidden');
+	// 	});
+	// },
 	created() {
 		this.$vuetify.rtl = true;
 		this.$vuetify.lang.current = 'ar';
